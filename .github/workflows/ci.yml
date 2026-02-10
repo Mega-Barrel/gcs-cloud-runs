@@ -1,5 +1,5 @@
 
-name: CI - Run Tests Everywhere
+name: CI - Run Python Tests
 
 on:
   push:
