@@ -1,7 +1,5 @@
-
+""" Test Module """
 from unittest.mock import Mock
-
-import pytest
 from hello_world import main
 
 def test_hello_http_with_json_name():
