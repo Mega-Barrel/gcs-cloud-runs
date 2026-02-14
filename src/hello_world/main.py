@@ -1,16 +1,17 @@
+
 """ Entry Point for App """
 
-import functions_framework
+import os
+from flask import Flask, request
 
-@functions_framework.http
-def hello_http(request):
+app = Flask(__name__)
+
+@app.route('/', methods=['GET', 'POST'])
+def hello_http():
     """
-    Args:
-        request: A Flash/Django style request object.
     Returns:
         The text you want to send back to the user.
     """
-
     request_json = request.get_json(silent=True)
     request_args = request.args
 
@@ -20,5 +21,11 @@ def hello_http(request):
         name = request_args['name']
     else:
         name = 'World'
-
     return f'Hello, {name}!'
+
+if __name__ == "__main__":
+    app.run(
+        debug = True,
+        host = '0.0.0.0',
+        port = int(os.environ.get('PORT', 8080))
+    )
