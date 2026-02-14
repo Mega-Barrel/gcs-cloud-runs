@@ -1,38 +1,40 @@
+
 """ Test Module """
-from unittest.mock import Mock
+
+import pytest
 from hello_world import main
 
-def test_hello_http_with_json_name():
+@pytest.fixture
+def client():
+    """Create a Flask test client for the app."""
+    main.app.config['TESTING'] = True
+    with main.app.test_client() as client:
+        yield client
+
+def test_hello_http_with_json_name(client):
     """
     Method to test with JSON object
     """
-    request = Mock(get_json=Mock(return_value={"name": "Alice"}), args=None)
-    response = main.hello_http(request)
-    assert "Hello, Alice!" in response
+    response = client.post('/', json={"name": "Alice"})
+    assert "Hello, Alice!" in response.text
 
-def test_hello_http_with_args_name():
+def test_hello_http_with_args_name(client):
     """
-    Mock a Request object with URL arguments (e.g. ?name=Bob)
+    Test with URL arguments (e.g. ?name=Bob)
     """
-    request = Mock(get_json=Mock(return_value=None), args={"name": "Bob"})
-    response = main.hello_http(request)
-    assert "Hello, Bob!" in response
+    response = client.get('/?name=Bob')
+    assert "Hello, Bob!" in response.text
 
-def test_hello_http_default():
+def test_hello_http_default(client):
     """
-    Mock a Request object with no data
+    Test with no data
     """
-    request = Mock(get_json=Mock(return_value=None), args={})
-    response = main.hello_http(request)
-    assert "Hello, World!" in response
+    response = client.get('/')
+    assert "Hello, World!" in response.text
 
-def test_hello_http():
+def test_hello_http(client):
     """
-    Mock a Request object with data
+    Test another JSON payload
     """
-    request = Mock()
-    request.get_json.return_value = {"name": "CI/CD"}
-    request.args = {}
-
-    response = main.hello_http(request)
-    assert "Hello, CI/CD!" in response
+    response = client.post('/', json={"name": "CI/CD"})
+    assert "Hello, CI/CD!" in response.text
